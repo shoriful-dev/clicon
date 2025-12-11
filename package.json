@@ -1,0 +1,50 @@
+{
+  "name": "clicon",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "testcategory": "node src/api/Category.js"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
+    "@reduxjs/toolkit": "^2.11.0",
+    "@tailwindcss/vite": "^4.1.14",
+    "@tanstack/react-query": "^5.90.5",
+    "@tanstack/react-query-devtools": "^5.90.2",
+    "@tanstack/react-virtual": "^3.13.12",
+    "axios": "^1.13.2",
+    "firebase": "^12.6.0",
+    "install": "^0.13.0",
+    "lucide-react": "^0.545.0",
+    "npm": "^11.6.3",
+    "prop-types": "^15.8.1",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "react-hook-form": "^7.68.0",
+    "react-icons": "^5.5.0",
+    "react-range-slider-input": "^3.2.1",
+    "react-redux": "^9.2.0",
+    "react-router": "^7.9.4",
+    "react-toastify": "^11.0.5",
+    "react-virtuoso": "^4.14.1",
+    "swiper": "^12.0.2",
+    "tailwindcss": "^4.1.14",
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.36.0",
+    "@types/react": "^19.1.16",
+    "@types/react-dom": "^19.1.9",
+    "@vitejs/plugin-react-swc": "^4.1.0",
+    "eslint": "^9.36.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.22",
+    "globals": "^16.4.0",
+    "vite": "^7.1.7"
+  }
+}
