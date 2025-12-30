@@ -1,5 +1,5 @@
 import { api } from "@/lib/axios";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 export const useallproduct = () => {
   return useQuery({
     queryKey: ["product"],
@@ -31,5 +31,30 @@ export const usesingleproduct = (slug) => {
       }
     },
     enabled:!!slug
+  });
+};
+
+
+
+// crearte sub category
+export const useAddToCart = () => {
+  return useMutation({
+    queryKey: ["addToCart"],
+    mutationFn: (value) => {
+      return api.post("cart/addtocart", value, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    },
+    onError: (error, onMutateResult) => {
+      // An error happened!
+      console.log(error);
+      console.log(`rolling back optimistic update with id ${onMutateResult}`);
+    },
+    onSuccess: (data) => {
+      console.log('Add to cart sucessfully' , data);
+    },
+  
   });
 };
