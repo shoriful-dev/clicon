@@ -1,169 +1,241 @@
-import { decrement, getTotal, increment, remove } from "@/features/addtocart";
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import {
+  useApplyCoupon,
+  useDeccrement,
+  useIncrement,
+  usercartItem,
+  useRemoveCart,
+} from "@/hooks/useapi";
+import { useState } from "react";
+import { Link } from "react-router";
 
-const AddToCart = () => {
-  const dispatch = useDispatch();
-  const { value ,totalQuantity,totalPrice } = useSelector((state) => state.cartStore);
- 
-  useEffect(() => {
-     dispatch(getTotal());
-  },[localStorage.getItem('cartitem')]);
+const AddToCart = ({ form, deliveryamount }) => {
+  const guestId = localStorage.getItem("guestId");
+  const { data, isPending, isError } = usercartItem(guestId);
+  const incrementmutation = useIncrement();
+  const decrementmutation = useDeccrement();
+  const removemutation = useRemoveCart();
+  const applyCouponMutation = useApplyCoupon();
+  // coupon state
+  const [coupon, setcoupon] = useState("");
 
-  // hadleincrement
-  const hadleincrement = (item) => {
-    dispatch(increment(item.id));
+  if (isPending) return <h1>Loading...</h1>;
+  if (isError) return <h1>Something went wrong</h1>;
+
+  const cart = data?.data?.data;
+  const items = cart?.items || [];
+
+  const totalQuantity = cart?.totalproduct || 0;
+  const totalPrice = cart?.totalAmountOfWholeProduct || 0;
+
+  // handleIncrement
+  const handleIncrement = (id) => {
+    incrementmutation.mutate(id);
   };
 
-  // handledecrement
-  const handledecrement = (item) => {
-    dispatch(decrement(item.id));
+  // handleDecrement
+  const handleDecrement = (id) => {
+    decrementmutation.mutate(id);
   };
 
-  // handleremove
-  const handleremove = (item) => {
-    dispatch(remove(item.id));
+  // handleRemove
+  const handleRemove = (id) => {
+    removemutation.mutate(id);
   };
+  // handleApplyCoupon
+  const handleApplyCoupon = () => {
+    const CouponPayload = {
+      user: localStorage.getItem("user") || null,
+      guestId: localStorage.getItem("guestId") || null,
+      coupon: coupon.trim(),
+    };
+    applyCouponMutation.mutate(CouponPayload);
+  };
+
   return (
     <div className="lg:max-w-5xl max-lg:max-w-2xl mx-auto bg-white p-4">
-      <div className="grid lg:grid-cols-3 gap-6">
+      <div
+        className={
+          form == "checkout"
+            ? "grid grid-rows-2  gap-6"
+            : "grid  lg:grid-cols-3 gap-6"
+        }
+      >
         {/* LEFT — CART ITEMS */}
         <div className="lg:col-span-2 bg-gray-100 p-6 rounded-md">
           <h3 className="text-lg font-semibold text-slate-900">Your Cart</h3>
           <hr className="border-gray-300 mt-4 mb-8" />
 
-          <div className="sm:space-y-6 space-y-8">
-            {/* CART ITEM 1 */}
-            {value.map((item) => (
-              <div className="grid sm:grid-cols-3 items-center gap-4">
-                <div className="sm:col-span-2 flex sm:items-center max-sm:flex-col gap-6">
-                  <div className="w-24 h-24 shrink-0 bg-white p-2 rounded-md">
-                    <img
-                      src={item.thumbnail}
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
-                  <div>
-                    <h4 className="text-[15px] font-semibold text-slate-900">
-                      {item.title}
-                    </h4>
-                    <h6
-                      className="text-xs font-medium text-red-500 cursor-pointer mt-1"
-                      onClick={() => handleremove(item)}
-                    >
-                      Remove
-                    </h6>
-                    <div className="flex gap-4 mt-4">
-                      {/* Quantity */}
+          {items.length === 0 ? (
+            <p className="text-gray-500">Your cart is empty</p>
+          ) : (
+            <div className="space-y-8">
+              {items.map((item) => {
+                const productData = item.variant || item.product;
+
+                return (
+                  <div
+                    key={item._id}
+                    className="grid sm:grid-cols-3 items-center gap-4"
+                  >
+                    {/* Image + Info */}
+                    <div className="sm:col-span-2 flex gap-6">
+                      <div className="w-24 h-24 bg-white p-2 rounded-md">
+                        <img
+                          src={productData?.image?.[0]}
+                          alt="product"
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
+
                       <div>
-                        <div className="flex items-center px-2.5 py-1.5 border border-gray-300 text-slate-900 text-xs rounded-md">
-                          <span
-                            className="cursor-pointer"
-                            onClick={() => handledecrement(item)}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="w-2.5 fill-current"
-                              viewBox="0 0 124 124"
-                            >
-                              <path d="M112 50H12C5.4 50 0 55.4 0 62s5.4 12 12 12h100c6.6 0 12-5.4 12-12s-5.4-12-12-12z"></path>
-                            </svg>
-                          </span>
+                        <h4 className="text-[15px] font-semibold text-slate-900">
+                          {productData?.variantName || productData?.name}
+                        </h4>
 
-                          <span className="mx-3">{item.quantity}</span>
+                        <p className="text-xs text-gray-500 mt-1">
+                          Color: {item.color}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          Size: {item.size}
+                        </p>
+                        {form !== "checkout" && (
+                          <div>
+                            {/* Quantity UI */}
+                            <div className="flex items-center gap-3 mt-4">
+                              <button
+                                disabled={decrementmutation.isPending}
+                                onClick={() => handleDecrement(item._id)}
+                                className="w-8 h-8 flex items-center justify-center border rounded-md text-lg"
+                              >
+                                −
+                              </button>
 
-                          <span
-                            className="cursor-pointer"
-                            onClick={() => hadleincrement(item)}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="w-2.5 fill-current"
-                              viewBox="0 0 42 42"
+                              <span className="text-sm font-medium">
+                                {item.quantity}
+                              </span>
+
+                              <button
+                                disabled={incrementmutation.isPending}
+                                onClick={() => handleIncrement(item._id)}
+                                className="w-8 h-8 flex items-center justify-center border rounded-md text-lg"
+                              >
+                                +
+                              </button>
+                            </div>
+
+                            {/* Remove Button */}
+                            <button
+                              disabled={removemutation.isPending}
+                              onClick={() => handleRemove(item._id)}
+                              className="mt-3 text-xs text-red-500 hover:underline"
                             >
-                              <path d="M37.059 16H26V4.941C26 2.224 23.718 0 21 0s-5 2.224-5 4.941V16H4.941C2.224 16 0 18.282 0 21s2.224 5 4.941 5H16v11.059C16 39.776 18.282 42 21 42s5-2.224 5-4.941V26h11.059C39.776 26 42 23.718 42 21s-2.224-5-4.941-5z"></path>
-                            </svg>
-                          </span>
-                        </div>
+                              Remove
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </div>
-                  </div>
-                </div>
 
-                <div className="sm:ml-auto flex">
-                  <h4 className="text-[15px] font-semibold text-slate-900">
-                    ${Math.round(item.price)}
-                  </h4>
-                  <h1>X</h1>
-                  <h4 className="text-[15px] font-semibold text-slate-900">
-                    {Math.round(item.quantity)} =
-                  </h4>
-                  <h4 className="text-[15px] font-semibold text-slate-900">
-                    ${Math.round(item.price * item.quantity)}
-                  </h4>
-                </div>
-              </div>
-            ))}
-          </div>
+                    {/* Price */}
+                    <div className="sm:ml-auto text-right">
+                      <p className="text-sm text-gray-500">
+                        ₹{item.price} × {item.quantity}
+                      </p>
+
+                      <p className="text-[15px] font-semibold text-slate-900">
+                        ₹{item.unitTotalPrice + deliveryamount}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* RIGHT — ORDER SUMMARY */}
-        <div className="bg-gray-100 rounded-md p-6 md:sticky top-0 h-max">
+        <div
+          className={
+            form == "checkout"
+              ? "bg-gray-100 rounded-md p-6 md:sticky top-0 h-max col-span-2"
+              : "bg-gray-100 rounded-md p-6 md:sticky top-0 h-max "
+          }
+        >
           <h3 className="text-lg font-semibold text-slate-900">
-            Order details
+            Order Details
           </h3>
           <hr className="border-gray-300 mt-4 mb-8" />
 
-          <ul className="text-slate-500 font-medium mt-8 space-y-4">
-         
-          
-            <li className="flex flex-wrap gap-4 text-sm">
-              Total Item
-              <span className="ml-auto text-slate-900 font-semibold">
+          <ul className="text-slate-600 font-medium space-y-4">
+            <li className="flex text-sm">
+              Total Items
+              <span className="ml-auto font-semibold text-slate-900">
                 {totalQuantity}
               </span>
             </li>
-            <li className="flex flex-wrap gap-4 text-sm text-slate-900">
-              Total <span className="ml-auto font-semibold">${totalPrice}</span>
+
+            {deliveryamount > 0 && (
+              <li className="flex text-sm">
+                Delivery Charge
+                <span className="ml-auto font-semibold text-slate-900">
+                  {deliveryamount}
+                </span>
+              </li>
+            )}
+
+            <li className="flex text-sm">
+              Total Price
+              <span className="ml-auto font-semibold text-slate-900">
+                ₹{totalPrice + deliveryamount}
+              </span>
             </li>
           </ul>
 
-          <div className="mt-8 space-y-3">
-            <button
-              type="button"
-              className="text-sm px-4 py-2.5 w-full font-medium tracking-wide bg-blue-600 hover:bg-blue-700 text-white rounded-md cursor-pointer"
-            >
-              Checkout
-            </button>
+          {form !== "checkout" && (
+            <div>
+              <div className="mt-8 space-y-3">
+                <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-md text-sm font-medium"></button>
 
-            <button
-              type="button"
-              className="text-sm px-4 py-2.5 w-full font-medium tracking-wide bg-transparent text-slate-900 border border-gray-300 rounded-md cursor-pointer"
-            >
-              Continue Shopping
-            </button>
-          </div>
+                <Link
+                  to={"/checkout"}
+                  className="w-full block border border-gray-300 py-2.5 rounded-md text-sm font-medium"
+                >
+                  Checkout
+                </Link>
+              </div>
 
-          <div className="mt-6">
-            <p className="text-slate-900 text-sm font-medium mb-2">
-              Do you have a promo code?
-            </p>
+              <div className="mt-6">
+                <p className="text-slate-900 text-sm font-medium mb-2">
+                  Do you have a promo code?
+                </p>
 
-            <div className="flex border border-blue-600 overflow-hidden rounded-md">
-              <input
-                type="text"
-                placeholder="Promo code"
-                className="w-full outline-0 bg-white text-slate-600 text-sm px-4 py-2.5"
-              />
+                <div className="flex border border-blue-600 rounded-md overflow-hidden">
+                  <input
+                    onChange={(e) => setcoupon(e.target.value)}
+                    value={coupon}
+                    disabled={cart.discountType != null}
+                    type="text"
+                    placeholder="Promo code"
+                    className="w-full px-4 py-2.5 text-sm outline-none"
+                  />
 
-              <button
-                type="button"
-                className="flex items-center justify-center font-medium tracking-wide bg-blue-600 hover:bg-blue-700 px-4 text-sm text-white cursor-pointer"
-              >
-                Apply
-              </button>
+                  {cart.discountType != null ? (
+                    <button className="bg-green-600 hover:bg-green-600 px-4 text-white text-sm">
+                      Taken
+                    </button>
+                  ) : (
+                    <button
+                      disabled={applyCouponMutation.isPending}
+                      onClick={handleApplyCoupon}
+                      className="bg-blue-600 hover:bg-blue-700 px-4 text-white text-sm"
+                    >
+                      {applyCouponMutation.isPending ? "loading .." : "Apply"}
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

@@ -6,6 +6,7 @@ import Layout from "./components/commonComponents/Layout";
 import ProductDeatilsPage from "./components/productDetails/Index";
 import { quantityContext } from "./context/QuantityContext";
 import AddToCart from "./pages/AddtoCart";
+import Checkout from "./pages/Checkout";
 import Home from "./pages/Home";
 import Shop from "./pages/Shop";
 import SignIn from "./pages/SignIn";
@@ -20,7 +21,7 @@ const App = () => {
           <Routes>
             <Route
               element={
-                <quantityContext.Provider value={totalQuantity }>
+                <quantityContext.Provider value={totalQuantity}>
                   <Layout />
                 </quantityContext.Provider>
               }
@@ -29,12 +30,13 @@ const App = () => {
               <Route path="shop" element={<Shop />} />
               <Route path="product/:id" element={<ProductDeatilsPage />} />
               <Route path="cart" element={<AddToCart />} />
+              <Route path="checkout" element={<Checkout />} />
               <Route path="*" element={"no DAta Found"} />
             </Route>
             {/* auth */}
             <Route>
-              <Route path="signup" element={<SignUp/>}/>
-              <Route path="signin" element={<SignIn/>}/>
+              <Route path="signup" element={<SignUp />} />
+              <Route path="signin" element={<SignIn />} />
             </Route>
           </Routes>
         </BrowserRouter>
