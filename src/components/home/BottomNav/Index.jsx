@@ -1,5 +1,6 @@
 import Container from "@/components/commonComponents/Container";
 import { icons } from "@/helpers/iconProvide";
+import { Link } from "react-router";
 
 const BottomNav = () => {
   return (
@@ -32,14 +33,14 @@ const BottomNav = () => {
                 <span>Compare</span>
               </div>
 
-              <div className="flex items-center gap-x-1 label3 text-gray_600">
+              <Link to = "/shop" className="flex items-center gap-x-1 label3 text-gray_600">
                 <icons.CiLocationOn size={20} />
-                <span>Customer Support</span>
-              </div>
-              <div className="flex items-center gap-x-1 label3 text-gray_600">
+                <span>Shop</span>
+              </Link>
+              <Link to={"/cart"} className="flex items-center gap-x-1 label3 text-gray_600">
                 <icons.CiLocationOn size={20} />
-                <span>Need Help</span>
-              </div>
+                <span>Cart</span>
+              </Link>
             </div>
           </div>
           {/* contact */}

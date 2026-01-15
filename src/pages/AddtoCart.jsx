@@ -22,6 +22,7 @@ const AddToCart = ({ form, deliveryamount }) => {
   if (isError) return <h1>Something went wrong</h1>;
 
   const cart = data?.data?.data;
+  console.log("cart data is" , cart)
   const items = cart?.items || [];
 
   const totalQuantity = cart?.totalproduct || 0;
@@ -143,7 +144,8 @@ const AddToCart = ({ form, deliveryamount }) => {
                       </p>
 
                       <p className="text-[15px] font-semibold text-slate-900">
-                        ₹{item.unitTotalPrice + deliveryamount}
+                         
+                        ₹{deliveryamount ?  (item.unitTotalPrice  + deliveryamount):item.unitTotalPrice}
                       </p>
                     </div>
                   </div>
@@ -186,7 +188,8 @@ const AddToCart = ({ form, deliveryamount }) => {
             <li className="flex text-sm">
               Total Price
               <span className="ml-auto font-semibold text-slate-900">
-                ₹{totalPrice + deliveryamount}
+                {deliveryamount ?  (` ${totalPrice + deliveryamount}`) : `₹ ${totalPrice}` }
+                
               </span>
             </li>
           </ul>
@@ -198,7 +201,7 @@ const AddToCart = ({ form, deliveryamount }) => {
 
                 <Link
                   to={"/checkout"}
-                  className="w-full block border border-gray-300 py-2.5 rounded-md text-sm font-medium"
+                  className="w-full text-center bg-primary_400 block border border-gray-300 py-2.5 rounded-md text-sm font-medium"
                 >
                   Checkout
                 </Link>
@@ -213,13 +216,13 @@ const AddToCart = ({ form, deliveryamount }) => {
                   <input
                     onChange={(e) => setcoupon(e.target.value)}
                     value={coupon}
-                    disabled={cart.discountType != null}
+                    disabled={cart?.discountType != null}
                     type="text"
                     placeholder="Promo code"
                     className="w-full px-4 py-2.5 text-sm outline-none"
                   />
 
-                  {cart.discountType != null ? (
+                  {cart?.discountType != null ? (
                     <button className="bg-green-600 hover:bg-green-600 px-4 text-white text-sm">
                       Taken
                     </button>

@@ -11,6 +11,7 @@ import Home from "./pages/Home";
 import Shop from "./pages/Shop";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
+import Success from "./pages/Success";
 const App = () => {
   const queryClient = new QueryClient();
    const { totalQuantity } = useSelector((state) => state.cartStore);
@@ -31,6 +32,7 @@ const App = () => {
               <Route path="product/:id" element={<ProductDeatilsPage />} />
               <Route path="cart" element={<AddToCart />} />
               <Route path="checkout" element={<Checkout />} />
+              <Route path="success" element={<Success />} />
               <Route path="*" element={"no DAta Found"} />
             </Route>
             {/* auth */}

@@ -122,7 +122,7 @@ const Shop = () => {
 
             {/* PRODUCT GRID */}
             <Product
-              productInfo={data.data.data}
+              productInfo={data?.data?.data}
               isloading={isPending}
               isError={null}
               productWidth="255"

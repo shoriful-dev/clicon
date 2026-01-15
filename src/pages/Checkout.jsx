@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import AddToCart from "./AddtoCart";
 
 const Checkout = () => {
+    const [deliveryamount , setdeliveryamount] = useState(0)
   const { data, isPending } = useralldeliverycharge();
   const ordermutation = useorder()
 
@@ -19,7 +20,7 @@ const Checkout = () => {
     paymentMethod: "",
   });
 
-  const [deliveryamount , setdeliveryamount] = useState(0)
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -28,7 +29,7 @@ const Checkout = () => {
     const payload = {
       user: localStorage.getItem("user") || null,
       guestId: localStorage.getItem("guestId") || null,
-      shippingInfo: {
+      shippinfo: {
         firstName: formData.firstName,
         phone: formData.phone,
         address: formData.address,
@@ -44,7 +45,7 @@ const Checkout = () => {
     
   };
 
-  if (isPending) return <h1>Loading...</h1>;
+ 
   useEffect(() => {
     if (formData.deliveryCharge) {
       const charge = deliveryCharges.find(
@@ -53,7 +54,7 @@ const Checkout = () => {
       setdeliveryamount(Math.ceil(charge.amount));
     }
   }, [formData.deliveryCharge]);
-    
+     if (isPending) return <h1>Loading...</h1>;
   return (
     <div className="bg-purple-50 sm:px-8 px-4 py-6">
       <div className="max-w-screen-xl mx-auto grid lg:grid-cols-2 gap-8">

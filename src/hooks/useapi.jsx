@@ -205,6 +205,7 @@ export const useorder = () => {
   return useMutation({
     queryKey: ["order"],
     mutationFn: (value) => {
+   
       return api.post("/order/create-order", value, {
         headers: {
           "Content-Type": "application/json",
@@ -212,11 +213,13 @@ export const useorder = () => {
       });
     },
     onError: (error) => {
-
       console.log(` crate order error ${error}`);
     },
     onSuccess: (data) => {
-      console.log('order placed sucessfully' , data);
+      if(data?.data?.statusCode == 203) {
+        window.location.href = data.data.data
+      }
+      
     },
   
   });
